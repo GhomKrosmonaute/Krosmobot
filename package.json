@@ -1,0 +1,24 @@
+{
+  "name": "Krosmobot",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/CamilleAbella/Krosmobot.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/CamilleAbella/Krosmobot/issues"
+  },
+  "homepage": "https://github.com/CamilleAbella/Krosmobot#readme",
+  "dependencies": {
+    "discord.js": "^12.0.1",
+    "mysql2": "^2.1.0"
+  }
+}
