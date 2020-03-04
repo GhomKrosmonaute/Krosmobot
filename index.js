@@ -12,35 +12,18 @@ const commandParser = message => {
     return { name, args: argString.split(/\s*,\s*/), message }
 }
 
-const client = new Client()
-client.db = createConnection(database)
-
-client.prompt = async (alert,filter,failMessage) => {
-    let result = true
-    while(result === true){
-        result = await new Promise( resolve => {
-            client.once('message', async message => {
-                await message.delete()
-                if(alert.channel.id !== message.channel.id) resolve(true)
-                if(/cancel|exit/i.test(message.content)) resolve(false)
-                const item = await filter(message)
-                if(item) resolve(item)
-                else await alert.edit(typeof failMessage === 'string' ? failMessage : failMessage(message))
-                resolve(true)
-            })
-        })
+const client = new Client({
+    fetchAllMembers: true,
+    disableMentions: 'everyone',
+    presence: {
+        activity: {
+            name: 'Krosmaga',
+            type: "PLAYING"
+        }
     }
-    return result
-}
+})
 
-client.normalize = text => text.trim().toLowerCase().replace(/\s+/g,'_')
-
-client.attachImage = (embed,tournament) => {
-    const name = client.normalize(tournament.name) + '.png'
-    const attachment = new MessageAttachment(path.resolve( __dirname, 'images', name), name)
-    embed.attachFiles([ attachment ])
-    embed.setImage(`attachment://${name}`)
-}
+client.db = createConnection(database)
 
 client.on('message', message => {
     if(!client.ready || message.system || !message.author) return
@@ -63,8 +46,13 @@ client.login(token)
 
 client.once('ready', async () => {
     client.commands = new Collection()
-    client.fetchAdmin = async () => client.users.fetch('352176756922253321')
+    client.krosmoz = client.guilds.cache.get('414529902382153770')
     try{
+        const functionDir = await readdir('./functions')
+        for(const functionFile of functionDir){
+            const functionName = functionFile.replace(/\.js$/,'')
+            client[functionName] = require(path.resolve('./functions',functionName))
+        }
         const commandDir = await readdir('./commands')
         for(const commandFile of commandDir){
             const commandName = commandFile.replace(/\.js$/,'')
