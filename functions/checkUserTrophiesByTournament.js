@@ -1,5 +1,5 @@
 
-async function checkUserTrophies( tournament, user ) {
+async function checkUserTrophiesByTournament(tournament, user ) {
     const member = await this.krosmoz.members.fetch({user,cache:true})
     return new Promise( async (resolve, reject) => {
         await this.fetchVictories( tournament, user )
@@ -27,4 +27,4 @@ async function checkUserTrophies( tournament, user ) {
     })
 }
 
-module.exports = checkUserTrophies
+module.exports = checkUserTrophiesByTournament

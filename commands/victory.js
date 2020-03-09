@@ -26,24 +26,27 @@ async function victory() {
                     async error => {
                         if(error) throw error
                         const newTrophies = await this.client.checkUserTrophies(tournament,user)
-                        const s = newTrophies.length > 0 ? 's' : ''
+                        const s = newTrophies.length > 1 ? 's' : ''
                         const ere = user.victories > 1 ? 'ème' : 'ère'
                         const embed = new MessageEmbed()
-                            .setTitle(`On a un grand gagnant !`)
+                            .setAuthor(`On a un grand gagnant !`,user.avatarURL({dynamic:true}))
                             .setDescription(`Félicitation ${user} pour ta **${user.victories}${ere}** victoire dans le **${tournament.name}**.`)
-                        if(newTrophies.length > 0)
+                            .setThumbnail(tournament.image)
+                        if(newTrophies.length > 0){
+                            let lastTrophy = null
                             embed.addField(`Voici le${s} trophée${s} que tu as gagné 😏`, newTrophies
-                                .map( trophy => (
-                                    `Pour **${trophy.requested_victories} victoires** ou plus: ${
-                                        this.client.krosmoz.roles.cache.get(trophy.role)
-                                    }`
-                                )).join('\n')
+                                .map( trophy => {
+                                    lastTrophy = trophy
+                                    return (
+                                        `Pour **${trophy.requested_victories} victoires** ou plus: ${
+                                            this.client.krosmoz.roles.cache.get(trophy.role)
+                                        }`
+                                    )
+                                }).join('\n')
                             )
-                        embed.setThumbnail(user.avatarURL({dynamic:true}))
-                        alert.edit(
-                            'Wahou <:wowFace:545209471748538393>',
-                            await this.client.attachImage(embed,tournament)
-                        ).catch()
+                            embed.setImage(lastTrophy.image)
+                        }
+                        alert.edit('Wahou <:wowFace:545209471748538393>', embed).catch()
                     }
                 )
             }

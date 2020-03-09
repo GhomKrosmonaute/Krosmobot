@@ -1,15 +1,16 @@
 
 const { Client, Collection, MessageAttachment } = require('discord.js')
 const { createConnection } = require('mysql2')
-const { readdir } = require('fs').promises
+const { readdir, readFile } = require('fs').promises
 const path = require('path')
 const { token, database, prefix } = require('./config.json')
 
-const commandRegex = new RegExp(`^${prefix}(?:\s*)?([a-z]+)(?:\s*)(.*)(?:\s*)$`,'i')
 const commandParser = message => {
-    if(!commandRegex.test(message.content)) return false
-    const [ , name, argString ] = commandRegex.exec(message.content)
-    return { name, args: argString.split(/\s*,\s*/), message }
+    if(!message.content.startsWith(prefix)) return false
+    const command = message.content.slice(prefix.length)
+    const name = command.split(/\s+/)[0]
+    const args = command.replace(name,'').trim()
+    return { name: name.toLowerCase(), args, message }
 }
 
 const client = new Client({
@@ -26,17 +27,14 @@ const client = new Client({
 client.db = createConnection(database)
 
 client.on('message', message => {
-    if(!client.ready || message.system || !message.author) return
+    if(!client.ready || message.system || !message.author || message.author.bot) return
     const userCommand = commandParser(message)
     if(!userCommand) return
     const command = client.commands.get(userCommand.name)
     try{
-        if(command){
-            if(Array.isArray(command)) command[0].bind(message)(userCommand.args)
-            else command.bind(message)(userCommand.args)
-        }
+        if(command) command.bind(message)(userCommand.args)
     }catch(error){
-        message.channel.send(`Une erreur est survenue avec la kommande ${userCommand.name}: ${error.message}`).catch()
+        message.channel.send(`Une erreur est survenue avec la Kommande ${userCommand.name}: ${error.message}`)
     }
 })
 

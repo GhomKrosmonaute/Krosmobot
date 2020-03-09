@@ -19,6 +19,7 @@
   "homepage": "https://github.com/CamilleAbella/Krosmobot#readme",
   "dependencies": {
     "discord.js": "^12.0.1",
+    "krosmap": "^1.0.3",
     "mysql2": "^2.1.0"
   }
 }
