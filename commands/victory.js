@@ -25,14 +25,14 @@ async function victory() {
                     [tournament.id,user_id],
                     async error => {
                         if(error) throw error
-                        const newTrophies = await this.client.checkUserTrophies(tournament,user)
+                        const newTrophies = await this.client.checkUserTrophiesByTournament(tournament,user)
                         const s = newTrophies.length > 1 ? 's' : ''
                         const ere = user.victories > 1 ? 'ème' : 'ère'
                         const embed = new MessageEmbed()
                             .setAuthor(`On a un grand gagnant !`,user.avatarURL({dynamic:true}))
                             .setDescription(`Félicitation ${user} pour ta **${user.victories}${ere}** victoire dans le **${tournament.name}**.`)
                             .setThumbnail(tournament.image)
-                        if(newTrophies.length > 0){
+                        if(newTrophies.length > 0){ 
                             let lastTrophy = null
                             embed.addField(`Voici le${s} trophée${s} que tu as gagné 😏`, newTrophies
                                 .map( trophy => {
